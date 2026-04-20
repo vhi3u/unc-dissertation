@@ -1,13 +1,106 @@
 % !TEX root = ../main.tex
 
-\chapter{Results}
+\section{Results}
+
+To diagnose the impact of shoal bathymetry on offshore transport and mixing, we define our output variables below. 
+
+Offshore flow can be represented by velocity in the x-direction (offshore), which we call $u$. For a positive $u$, currents are moving offshore, and the opposite for a negative $u$. In our simulation figures, offshore flow represents flow moving towards the east (right), and onshore flow represents flow moving towards the west (left). 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth,height=0.4\textheight,keepaspectratio]{parts/figures/Hs15_100.png}
+    \caption{Surface (z = 0) u-velocity (left) and kinetic energy (right) for the reference case. X axis represents distance offshore (km), and y axis represents distance alongshore (km).} 
+    \label{fig:Hs15_100}
+\end{figure}
+
+In addition to offshore flow shown in our simulation output (Fig. \ref{fig:Hs15_100}), we also calculate kinetic energy from the velocity field, which is defined as 
+
+\begin{equation}
+    KE = \frac{1}{2} (u^2 + v^2 + w^2)
+\end{equation}
+
+where $u, v, w$ are the velocity components in the x, y, and z directions, respectively. 
+
+To quantify the transport of heat and salt, we calculate the time-averaged offshore flux. The time-averaged flux of a tracer $\phi$ (representing temperature $T$ or salinity $S$) is defined as:
+\begin{equation}
+    \overline{u\phi} = \frac{1}{\Delta t} \int_{t_0}^{t_0+\Delta t} u(x,y,z,t) \phi(x,y,z,t) dt
+\end{equation}
+where we use an averaging period of $\Delta t = 10$ days. Furthermore, we compute the depth-averaged offshore flux as:
+\begin{equation}
+    \langle \overline{u\phi} \rangle_z = \frac{1}{H} \int_{-H}^0 \overline{u\phi} dz
+\end{equation}
+where $H$ is the local water depth.
+
+Lastly, we analyze the turbulent kinetic energy (TKE) to investigate flow instabilities and mixing near the shoal. Using Reynolds decomposition ($u = \bar{u} + u'$), the time-averaged TKE is defined as:
+\begin{equation}
+    \overline{TKE} = \frac{1}{2} \left[ (\overline{u^2} - \bar{u}^2) + (\overline{v^2} - \bar{v}^2) + (\overline{w^2} - \bar{w}^2) \right]
+\end{equation}
+where the overline denotes a time-average.
+
+For our reference case, as background flow moving northward encounters the shoal, it is deflected offshore upstream. In the region where the shoal is present on the shelf, the diverted flow follows along the shoal, and the velocity near the shoal is higher than the background velocity along the rest of the shelf. Comparing the upstream (toward the shoal) and downstream (past the shoal) velocity, offshore velocity concentrates upstream at the edge of the shoal, while onshore velocity is spread out further in the y direction downstream of the shoal. The assymetry between these two patterns suggests that the turbulence generated on the shoal as flow moves toward it redirects flow offshore. High kinetic energy is present on the surface in regions along the linear coastal ramp, and along the edge of the shoal in the x direction. Notably, the appearance of eddies on the surface, over the top of the shoal, suggests turbulent flow over the shoal that can mix the water column vertically and horizontally. 
+
+\subsection{Parameter Sweep}
+
+To better understand how shoal bathymetry alters flow dynamics, we conduct a parameter sweep of bathymetry-related variables. For the scope of this study, we analyze the effect of shoal height $H_S$ and shoal length $L_S$. Constants and our changing parameters are listed in Table \ref{tab:params}. 
+
+\begin{table}[ht!]
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.3}
+  \caption{Simulation parameters for the parameter sweep. Bracketed parameters represent different test cases, with the reference case bolded.}
+  \label{tab:params}
+  \begin{tabular}{lll}   
+    \toprule
+    \textbf{Symbol} & \textbf{Parameter} & \textbf{Value(s)} \\
+    \midrule
+    $L_x$ & Domain length ($x$) & 100 km \\
+    $L_y$ & Domain width ($y$) & 300 km \\
+    $L_z$ & Domain depth ($z$) & 50 m \\
+    $f$ & Coriolis frequency ($f$-plane) & $8.4168 \times 10^{-5}$ s$^{-1}$ \\
+    $H_S$ & Shoal height & [5, 10, \textbf{15}] m \\
+    $L_S$ & Shoal length ($x$-direction) & [\textbf{20}, 30, 40] km \\
+    $\sigma_S$ & Shoal width ($y$-direction) & 8 km \\
+    $L_{sh}$ & Shelf width ($x$-direction) & 50 km \\
+    $H_{sh}$ & Shelf depth & 25 m \\
+    $(V_N, V_S)$ & North--South inflow velocity & (0.1, 0.1) m s$^{-1}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Offshore Flux}
 
 
-\section{Parameter Sweep}
+TODO: 
 
-\section{Offshore Flux}
+calculate volume transport? transport at shelf break? 
+Plots for this: 
 
-\section{Eddy Kinetic Energy}
+last time averaged window of offshore velocity (x-direction) on xy map for varying shoal heights and varying shoal lengths. 
+
+time averaged window of offshore transport ($uT - uT_{east}$ and $uS - uS_{east}$) ? Try using recent cluster set from a couple days ago. 
+
+stacked line plot of depth averaged and y averaged (over clipped window) offshore velocity (u) for varying shoal heights and varying shoal lengths. 
+
+Should get a sense of shallower shoals leads to more offshore transport? 
+Longer shoal leads to larger volume transport? 
+Larger barrier for mean northward flow. 
+
+avg volume transport as a dot plot where x axis is shoal length and y axis is volume transport. 
+
+similar idea for shoal height? maybe some covariance. 
+
+
+\subsection{Eddy Kinetic Energy}
+
+TODO:
+
+mean kinetic energy and eddy/turbulent kinetic energy depth averaged and time averaged plots. 
+
+maybe look at mid-depth slices for KE? 
+
+show clear transition of MKE to EKE/TKE as side by side panels. 
+
+
 
 
 % This chapter contains examples of special elements that can be used in a LaTeX document, such as figures and block quotes. The purpose of this chapter is to demonstrate how to use these elements effectively in a document. This chapter is not meant to be a comprehensive guide to using these elements, but rather a brief introduction to their usage and a visual test that demonstrates how they look in the final document.

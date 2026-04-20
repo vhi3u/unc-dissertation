@@ -41,4 +41,8 @@
       ]
     }
   ],
+  "latex-workshop.message.latexlog.exclude": [
+    "Reference.*undefined",
+    "Citation.*undefined"
+  ]
 }

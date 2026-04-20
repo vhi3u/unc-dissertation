@@ -79,6 +79,8 @@
 % - Single-space chapter titles and section headers
 % - Retain double-spacing between chapter titles and following text
 % - Retain double-spacing between section headers and following text
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
 \titleformat*{\section}{\bfseries\fontsize{12}{14}\selectfont\singlespacing}
 \titleformat{name=\chapter,numberless}[block]
 {\normalfont\normalsize\filcenter\singlespacing}{}{0pt}{\normalsize}

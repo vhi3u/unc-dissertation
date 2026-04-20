@@ -1,10 +1,85 @@
 % !TEX root = ../main.tex
 
-\chapter{Methods}
+\section{Methods}
 
-\section{Observational Data}
+We use the Diamond Shoals as a reference case to analyze shoal morphology on ocean dynamics. While focusing on specific parameters and setup similar to the Diamond Shoals, it should be noted that this study is generalizable and our model can be tuned to observe offshore dynamics and energetics on a variety of shoal-shelf morphology, which will be further discussed in Section 4. 
 
-\section{Model Setup}
+\subsection{Observational Data}
+
+Observational data for this study were derived from the Processes driving Exchange At Cape Hatteras program, which used moorings, gliders, ADCP, and HF radar over an 18-month period to observe exchange between shelf-water and open ocean in Cape Hatteras, North Carolina \cite{seim22}. For this study, we use processed CTD data from two moorings located roughly 50 km north (B1) and south (B2) of the Point as depicted in Fig. \ref{fig:mooring_location}. 
+
+The B1 mooring is located at $35.77820^\circ N$, $75.09470^\circ W$, situated north of The Point. Mean temperature and salinity for this mooring at 5 m depth are roughly $20.5^\circ C$ and 32.6 psu, respectively. In contrast, the B2 mooring is located at $34.78230^\circ N$, $75.94120^\circ W$ southwest of the The Point, with mean temperature and salinity at 5 m depth being roughly $24.5^\circ C$ and 35.5 psu, respectively (Fig. \ref{fig:b1b2ts}). Here, southward transport over the MAB shelf transports relatively cold and fresh water southward toward Cape Hatteras.  In contrast to the B1 mooring, the B2 mooring is located where the SAB shelf transports relatively warm, salty water northward towards The Point \cite{savidge13}. Mean temperature and salinity profiles from B1 and B2 suggest a stronger density gradient at the surface than at depth (Fig. \ref{fig:dens_ts}). 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth,height=0.4\textheight,keepaspectratio]{parts/figures/mooringlocation.png}
+    \caption{Map of B1 (north) and B2 (south) moorings deployed during PEACH project from 2017-2018. Green lines represent the coastline, and the point of Cape Hatteras is indicated as a yellow star. Bathymetry data used to form the contour lines are from GEBCO.}
+    \label{fig:mooring_location}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth,height=0.4\textheight,keepaspectratio]{parts/figures/b1b2ts.png}
+    \caption{B1 and B2 Temperature/Salinity for 5 m (circle), 15 m (square), 30/35 m (triangle) depths. Density contour lines are overlaid.}
+    \label{fig:b1b2ts}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth,height=0.4\textheight,keepaspectratio]{parts/figures/dens_ts.png}
+    \caption{Interpolated temperature, salinity, and density profiles for B1 (blue) and B2 (red) moorings deployed during PEACH. Marked symbols indicate the surface (circle), middle (square), and bottom (triangle) depths in which CTD data was collected. Density is calculated using TEOS-10.}
+    \label{fig:dens_ts}
+\end{figure}
+
+We use GEBCO\_2014 gridded bathymetry data \cite{weatherall15} to determine the shelf-shoal morphology of the Diamond Shoals, and construct a profile of the shoal using a piecewise function with sigmoidal smoothing. By taking a 40 km transect starting from the point of Cape Hatteras towards offshore, the shoal itself can be broken down into 4 main slopes: 1) a steep coastal ramp connected directly to the coastline and extending to 5 m depth, 2) the top of the shoal spanning $~$ 20 km offshore from 5 m to 15 m depth, 3) a steep shelf slope from 15 m depth to 50 m depth, and 4) a flat surface. It should be noted that we limit depth from 0 to 50 m to isolate shoal-shelf dynamics rather than deeper offshore ones (Fig. \ref{fig:xztransect}). 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth,height=0.4\textheight,keepaspectratio]{parts/figures/xztransect.png}
+    \caption{X-Z (along-shoal) transect of Diamond Shoals with GEBCO bathymetry data. }
+    \label{fig:xztransect}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth,height=0.4\textheight,keepaspectratio]{parts/figures/yztransects.png}
+    \caption{Y-Z (across-shoal) transects of Diamond Shoals with GEBCO bathymetry data, taken at 5 km intervals along the shoal. The shoal is centered at on the x axis at 50 km across shore. }
+    \label{fig:yztransects}
+\end{figure}
+
+\subsection{Model Setup}
+
+Our idealized flow over shoals model was developed using Oceananigans, a Julia package which solves the nonhydrostatic incompressible Boussinesq equations for fluid flow \cite{wagner25}. Oceananigans uses finite-volume discretizations to solve the Boussinesq equations, where density of the modeled fluid is decomposed into a constant reference density $\rho_0$ and a perturbation density $\rho'$, 
+
+\begin{equation}
+    \rho(x, y, z, t) = \rho_0 + \rho'(x, y, z, t)
+\end{equation}
+
+With this approximation, the momentum equations are written as 
+
+\begin{align}
+    \partial_t \boldsymbol{u} = - \boldsymbol{\nabla} p & - \underbrace{(\boldsymbol{u} \cdot \boldsymbol{\nabla}) \boldsymbol{u} - (\boldsymbol{u}_g \cdot \boldsymbol{\nabla}) \boldsymbol{u} - (\boldsymbol{u} \cdot \boldsymbol{\nabla}) \boldsymbol{u}_g}_{\text{advection}} - \underbrace{\boldsymbol{f} \times \boldsymbol{u}}_{\text{Coriolis}} \nonumber \\
+    & + \underbrace{(\boldsymbol{\nabla} \times \boldsymbol{u}_s) \times \boldsymbol{u} + \partial_t \boldsymbol{u}_s}_{\text{Stokes drift}} - \underbrace{b \boldsymbol{\hat{g}}}_{\text{buoyancy}} - \underbrace{\boldsymbol{\nabla} \cdot \boldsymbol{\tau}}_{\text{closure}} + \underbrace{\boldsymbol{F}_u}_{\text{forcing}} ,
+\end{align}
+
+where $\boldsymbol{u} = (u, v, w)$ is the Eulerian velocity, $p$ is the kinematic pressure, $\boldsymbol{u}_g$ is a background geostrophic flow, $\boldsymbol{f} = (0, 0, f)$ is the Coriolis parameter, $\boldsymbol{u}_s$ is the Stokes drift, $b = -g \rho' / \rho_0$ is the buoyancy, $\boldsymbol{\tau}$ is the turbulent stress tensor, and $\boldsymbol{F}_u$ represents additional forcing. 
+
+In all of our simulations, we use a 5th-order Weighted Essentially Non-Oscillatory (WENO) advection scheme and a 3rd-order Runge-Kutta time-stepping method. We also use an anisotropic minimum dissipation (AMD) model as a turbulence closure and a conjugate gradient method to solve for the pressure on the immersed bathymetry boundary. The choice of advection scheme, timestepping method, turbulence closure, and pressure solver are based off the headland flow model setup from \cite{chor25}, also written in Oceananigans. For all simulations, the model is run for 100 days.
+
+Initial bathymetry setup was developed using topographic data from General Bathymetric Chart of the Oceans (GEBCO). An XZ slice of the Diamond Shoals was taken, and extrapolated into a piecewise, linear curve, to represent the cross-shore bathymetry, and combined with a gaussian bump, an idealized bathymetry of the Diamond Shoals was fitted into the model grid with a horizontal resolution (Nx, Ny) of 500 m, and a vertical resolution (Nz) of 1 m. It should be noted that the orientation of Cape Hatteras is $10^\circ N$ on the east side, $166^\circ N$ at the cape point, and $120^\circ N$ farther west. For simplicity, the shelf and shoal is placed along the western wall, so along-shoal direction refers to position along the x-axis, and cross-shoal direction refers to position along the y-axis.
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth,height=0.4\textheight,keepaspectratio]{parts/figures/3dbathymetry_xz.png}
+    \caption{ (Left) Idealized 3D bathymetry of the Diamond Shoals. (Right) X-Z transect of the background continental shelf (red) and the idealized shoal (blue).}
+    \label{fig:idealized_bathymetry}
+\end{figure}
+
+As a reference case, idealized model bathymetry is constructed with shoal height $H_S = 15$ m, protruding upward in the z dimension relative to the start of the shelf, and shoal length $L_S = 20$ km, extending from the beginning of the shelf offshore in the x direction (Fig. \ref{fig:idealized_bathymetry}). Shoal width $\sigma_S$, which measures the distance along-shore from the center of the shoal to its extent in the y direction, is 8 km for our reference case. Shelf width $L_{sh}$ measures the distance offshore that the shelf protrudes, and is set at 50 km. Lastly, shelf height $H_{sh}$ is set at 25 m from the bottom of the domain.  
+
+For boundary conditions, we use periodic boundary conditions in the north and south (y-direction), so flow moving towards the north will return through the southern boundary as it passes through. In the reference case, we prescribe a background flow of $v_0 = 0.1$ m/s in the y direction, representing a mean northward flow across the shoal. In the case of one directional flow, temperature and salinity boundary conditions are value (dirichlet) boundary conditions matching the temperature and salinity profile from the B2 mooring south of Cape Hatteras. To better constrain offshore transport, we nudge the offshore region of the domain (where $x > L_{sh}$) towards zero velocity and a stratified temperature and salinity profile. For this reference case, wind forcing is not considered. For all simulations, the Coriolis force is implemented as an f-plane approximation, where $f = 8.4168 \times 10^{-5}$ s$^{-1}$.
+
 
 
 % \footnotetext[1]{

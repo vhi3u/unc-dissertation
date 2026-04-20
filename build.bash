@@ -75,7 +75,7 @@ pdflatex --shell-escape "$NAME_IN" -interaction=nonstopmode -file-line-error | t
 # Clean up project folder after the final compilation
 if ! grep -q "LaTeX Error:" "$LOG_FILE"; then
     mv "${NAME_IN%.tex}.pdf" "$NAME_OUT"
-    clean_auxiliary_files "$NAME_IN"
+    # clean_auxiliary_files "$NAME_IN"
 else
     printf "\n\nLaTeX compilation error detected in final pass!\n\n"
 fi
